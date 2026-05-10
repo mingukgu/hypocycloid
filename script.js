@@ -7,7 +7,8 @@ const radiusBInput = document.getElementById("radius-b");
 const speedInput = document.getElementById("speed-input");
 const modeHypoInput = document.getElementById("mode-hypo");
 const modeEpiInput = document.getElementById("mode-epi");
-const traceOnlyToggle = document.getElementById("trace-only-toggle");
+const hideBigCircleToggle = document.getElementById("hide-big-circle-toggle");
+const hideSmallCircleToggle = document.getElementById("hide-small-circle-toggle");
 
 const radiusAValue = document.getElementById("radius-a-value");
 const radiusBValue = document.getElementById("radius-b-value");
@@ -65,7 +66,8 @@ let state = {
   speed: DEFAULT_SPEED,
   showHypo: true,
   showEpi: false,
-  traceOnly: false,
+  hideBigCircle: false,
+  hideSmallCircle: false,
   status: "유효한 식입니다."
 };
 
@@ -171,24 +173,43 @@ function getModeLabel(modes = getActiveModes()) {
   return "선택된 모드 없음";
 }
 
-function getTraceOnlyView() {
-  return state.traceOnly && !running;
+function getHideBigCircle() {
+  return state.hideBigCircle && !running;
+}
+
+function getHideSmallCircle() {
+  return state.hideSmallCircle && !running;
 }
 
 function getViewLabel() {
+  const hidden = [];
+
+  if (getHideBigCircle()) {
+    hidden.push("큰 원");
+  }
+
+  if (getHideSmallCircle()) {
+    hidden.push("작은 원");
+  }
+
   if (running) {
     return "실행 중: 원과 자취 함께 보기";
   }
 
-  if (state.traceOnly) {
-    return "정지 중: 자취만 보기";
+  if (hidden.length === 2) {
+    return "정지 중: 큰 원과 작은 원 숨김";
+  }
+
+  if (hidden.length === 1) {
+    return `정지 중: ${hidden[0]} 숨김`;
   }
 
   return "정지 중: 원과 자취 함께 보기";
 }
 
 function updateControlAvailability() {
-  traceOnlyToggle.disabled = running;
+  hideBigCircleToggle.disabled = running;
+  hideSmallCircleToggle.disabled = running;
 }
 
 function updateLabels() {
@@ -236,7 +257,8 @@ function syncStateFromInputs() {
   let nextSpeed = state.speed;
   const nextShowHypo = modeHypoInput.checked;
   const nextShowEpi = modeEpiInput.checked;
-  const nextTraceOnly = traceOnlyToggle.checked;
+  const nextHideBigCircle = hideBigCircleToggle.checked;
+  const nextHideSmallCircle = hideSmallCircleToggle.checked;
   let status = "유효한 식입니다.";
   let valid = true;
 
@@ -308,7 +330,8 @@ function syncStateFromInputs() {
       speed: nextSpeed,
       showHypo: nextShowHypo,
       showEpi: nextShowEpi,
-      traceOnly: nextTraceOnly,
+      hideBigCircle: nextHideBigCircle,
+      hideSmallCircle: nextHideSmallCircle,
       status
     };
     radiusAInput.classList.remove("invalid");
@@ -321,7 +344,8 @@ function syncStateFromInputs() {
     ...state,
     showHypo: nextShowHypo,
     showEpi: nextShowEpi,
-    traceOnly: nextTraceOnly,
+    hideBigCircle: nextHideBigCircle,
+    hideSmallCircle: nextHideSmallCircle,
     status
   };
   return false;
@@ -463,7 +487,11 @@ function drawTrace(targetCtx, points, color) {
 }
 
 function renderScene(targetCtx, width, height, options = {}) {
-  const { showGrid = true, showGuides = true } = options;
+  const {
+    showGrid = true,
+    showBigCircle = true,
+    showSmallCircles = true
+  } = options;
   const activeModes = getActiveModes();
 
   targetCtx.clearRect(0, 0, width, height);
@@ -495,24 +523,28 @@ function renderScene(targetCtx, width, height, options = {}) {
     drawTrace(targetCtx, traces[mode], CURVE_CONFIGS[mode].traceColor);
   }
 
-  if (showGuides) {
+  if (showBigCircle || showSmallCircles) {
     const bigR = geometries[activeModes[0]].bigR;
 
-    targetCtx.beginPath();
-    targetCtx.arc(0, 0, bigR, 0, Math.PI * 2);
-    targetCtx.strokeStyle = "#2f241b";
-    targetCtx.lineWidth = 2.4;
-    targetCtx.stroke();
+    if (showBigCircle) {
+      targetCtx.beginPath();
+      targetCtx.arc(0, 0, bigR, 0, Math.PI * 2);
+      targetCtx.strokeStyle = "#2f241b";
+      targetCtx.lineWidth = 2.4;
+      targetCtx.stroke();
+    }
 
     for (const mode of activeModes) {
       const config = CURVE_CONFIGS[mode];
       const geometry = geometries[mode];
 
-      targetCtx.beginPath();
-      targetCtx.arc(geometry.cx, geometry.cy, geometry.smallR, 0, Math.PI * 2);
-      targetCtx.strokeStyle = config.guideColor;
-      targetCtx.lineWidth = 2.4;
-      targetCtx.stroke();
+      if (showSmallCircles) {
+        targetCtx.beginPath();
+        targetCtx.arc(geometry.cx, geometry.cy, geometry.smallR, 0, Math.PI * 2);
+        targetCtx.strokeStyle = config.guideColor;
+        targetCtx.lineWidth = 2.4;
+        targetCtx.stroke();
+      }
 
       targetCtx.beginPath();
       targetCtx.moveTo(geometry.cx, geometry.cy);
@@ -533,22 +565,28 @@ function renderScene(targetCtx, width, height, options = {}) {
       targetCtx.fillText(label, geometry.px + 10, geometry.py + labelOffsetY);
     }
 
-    targetCtx.beginPath();
-    targetCtx.arc(bigR, 0, 4.5, 0, Math.PI * 2);
-    targetCtx.fillStyle = "#2f241b";
-    targetCtx.fill();
-    targetCtx.fillStyle = "#2f241b";
-    targetCtx.font = '700 14px "Trebuchet MS", "Avenir Next", sans-serif';
-    targetCtx.fillText("(a, 0)", bigR + 10, -10);
+    if (showBigCircle) {
+      targetCtx.beginPath();
+      targetCtx.arc(bigR, 0, 4.5, 0, Math.PI * 2);
+      targetCtx.fillStyle = "#2f241b";
+      targetCtx.fill();
+      targetCtx.fillStyle = "#2f241b";
+      targetCtx.font = '700 14px "Trebuchet MS", "Avenir Next", sans-serif';
+      targetCtx.fillText("(a, 0)", bigR + 10, -10);
+    }
   }
 
   targetCtx.restore();
 }
 
 function renderToCanvas(showGrid = true) {
+  const showBigCircle = !getHideBigCircle();
+  const showSmallCircles = !getHideSmallCircle();
+
   renderScene(ctx, canvas.clientWidth, canvas.clientHeight, {
     showGrid,
-    showGuides: !getTraceOnlyView()
+    showBigCircle,
+    showSmallCircles
   });
 }
 
@@ -631,10 +669,11 @@ function handleModeChange(event) {
   handleSceneChange();
 }
 
-function handleTraceOnlyChange() {
+function handleHideCirclesChange() {
   state = {
     ...state,
-    traceOnly: traceOnlyToggle.checked
+    hideBigCircle: hideBigCircleToggle.checked,
+    hideSmallCircle: hideSmallCircleToggle.checked
   };
   updateLabels();
   renderToCanvas();
@@ -661,7 +700,8 @@ function downloadImage(includeGrid) {
 
   renderScene(exportCtx, width, height, {
     showGrid: includeGrid,
-    showGuides: !getTraceOnlyView()
+    showBigCircle: !getHideBigCircle(),
+    showSmallCircles: !getHideSmallCircle()
   });
 
   const link = document.createElement("a");
@@ -682,7 +722,8 @@ radiusBInput.addEventListener("input", handleSceneChange);
 speedInput.addEventListener("input", handleSceneChange);
 modeHypoInput.addEventListener("change", handleModeChange);
 modeEpiInput.addEventListener("change", handleModeChange);
-traceOnlyToggle.addEventListener("change", handleTraceOnlyChange);
+hideBigCircleToggle.addEventListener("change", handleHideCirclesChange);
+hideSmallCircleToggle.addEventListener("change", handleHideCirclesChange);
 startButton.addEventListener("click", startAnimation);
 resetButton.addEventListener("click", handleReset);
 saveButton.addEventListener("click", (event) => {
