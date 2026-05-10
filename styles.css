@@ -29,7 +29,7 @@ body {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 360px minmax(0, 1fr);
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
   min-height: 100dvh;
   gap: 24px;
   padding: 24px;
@@ -210,18 +210,31 @@ button.secondary {
 .visual-panel {
   min-width: 0;
   min-height: 0;
+  display: flex;
 }
 
 .canvas-card {
+  flex: 1;
   height: min(100%, calc(100dvh - 48px));
-  min-height: 560px;
+  min-height: 0;
   border-radius: 32px;
   padding: 18px;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  display: flex;
 }
 
-.canvas-card::before {
+.canvas-surface {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: clamp(360px, 58dvh, 900px);
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--canvas-bg);
+}
+
+.canvas-surface::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -230,6 +243,7 @@ button.secondary {
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: 44px 44px;
   pointer-events: none;
+  z-index: 0;
 }
 
 canvas {
@@ -237,8 +251,8 @@ canvas {
   display: block;
   width: 100%;
   height: 100%;
-  background: var(--canvas-bg);
-  border-radius: 24px;
+  background: transparent;
+  z-index: 1;
 }
 
 .canvas-toolbar {
@@ -297,6 +311,9 @@ button:disabled {
 
   .canvas-card {
     height: auto;
+  }
+
+  .canvas-surface {
     min-height: 60dvh;
   }
 }
@@ -315,6 +332,9 @@ button:disabled {
 
   .canvas-card {
     height: min(100%, calc(100dvh - 32px));
-    min-height: 480px;
+  }
+
+  .canvas-surface {
+    min-height: 420px;
   }
 }

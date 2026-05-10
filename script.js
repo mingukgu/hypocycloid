@@ -1,5 +1,6 @@
 const canvas = document.getElementById("scene");
 const ctx = canvas.getContext("2d");
+const canvasSurface = document.getElementById("canvas-surface");
 
 const radiusAInput = document.getElementById("radius-a");
 const radiusBInput = document.getElementById("radius-b");
@@ -26,7 +27,6 @@ const saveMenu = document.getElementById("save-menu");
 const saveWithGridButton = document.getElementById("save-with-grid");
 const saveWithoutGridButton = document.getElementById("save-without-grid");
 
-const DPR = window.devicePixelRatio || 1;
 const DEFAULT_SPEED = 0.02;
 const MAX_TRACE_POINTS = 8000;
 const RATIONAL_TOLERANCE = 1e-10;
@@ -58,6 +58,7 @@ let running = false;
 let theta = 0;
 let loopClosed = false;
 let traces = createEmptyTraces();
+let resizeObserver = null;
 let state = {
   a: 4,
   b: 1,
@@ -76,16 +77,16 @@ function createEmptyTraces() {
 }
 
 function fitCanvas() {
-  const card = canvas.parentElement;
-  const rect = card.getBoundingClientRect();
-  const width = Math.max(320, Math.floor(rect.width - 36));
-  const height = Math.max(420, Math.floor(rect.height - 36));
+  const rect = canvasSurface.getBoundingClientRect();
+  const width = Math.max(320, Math.floor(rect.width));
+  const height = Math.max(320, Math.floor(rect.height));
+  const dpr = window.devicePixelRatio || 1;
 
-  canvas.width = width * DPR;
-  canvas.height = height * DPR;
+  canvas.width = Math.floor(width * dpr);
+  canvas.height = Math.floor(height * dpr);
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
-  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   renderToCanvas();
 }
@@ -670,7 +671,9 @@ function downloadImage(includeGrid) {
 
   link.download = `cycloid-${modeSlug}-${gridSlug}-${timestamp}.png`;
   link.href = exportCanvas.toDataURL("image/png");
+  document.body.append(link);
   link.click();
+  link.remove();
   setSaveMenu(false);
 }
 
@@ -694,6 +697,13 @@ document.addEventListener("click", (event) => {
   }
 });
 window.addEventListener("resize", fitCanvas);
+
+if ("ResizeObserver" in window) {
+  resizeObserver = new ResizeObserver(() => {
+    fitCanvas();
+  });
+  resizeObserver.observe(canvasSurface);
+}
 
 syncStateFromInputs();
 updateControlAvailability();
