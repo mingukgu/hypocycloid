@@ -3,19 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hypocycloid Explorer</title>
+    <title>Cycloid Explorer</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="control-panel">
         <div class="panel-copy">
-          <p class="eyebrow">Hypocycloid Lab</p>
-          <h1>하이포사이클로이드 관찰기</h1>
+          <p class="eyebrow">Cycloid Lab</p>
+          <h1>하이포사이클로이드 / 에피사이클로이드 관찰기</h1>
           <p class="description">
-            큰 원 반지름 <strong>a</strong>, 작은 원 반지름
-            <strong>b</strong>를 조절한 뒤 작은 원의 내부 구름 운동과 점
-            <strong>P</strong>의 궤적을 관찰하세요.
+            큰 원 반지름 <strong>a</strong>, 작은 원 반지름 <strong>b</strong>,
+            그리고 속도를 조절하면서 하이포사이클로이드와 에피사이클로이드의
+            궤적을 비교해 보세요.
           </p>
         </div>
 
@@ -49,6 +49,29 @@
           </div>
         </div>
 
+        <div class="control-group">
+          <span class="group-label">표시 모드</span>
+          <div class="toggle-stack">
+            <label class="check-option" for="mode-hypo">
+              <input id="mode-hypo" type="checkbox" checked />
+              <span>하이포사이클로이드</span>
+            </label>
+            <label class="check-option" for="mode-epi">
+              <input id="mode-epi" type="checkbox" />
+              <span>에피사이클로이드</span>
+            </label>
+          </div>
+          <p class="input-hint">둘 다 체크하면 두 곡선을 동시에 표시합니다.</p>
+        </div>
+
+        <div class="control-group">
+          <label class="check-option" for="trace-only-toggle">
+            <input id="trace-only-toggle" type="checkbox" />
+            <span>정지 상태에서 원 숨기기</span>
+          </label>
+          <p class="input-hint">일시정지하거나 정지했을 때 자취만 남겨서 감상할 수 있습니다.</p>
+        </div>
+
         <div class="button-row">
           <button id="start-button" type="button">시작</button>
           <button id="reset-button" type="button" class="secondary">초기화</button>
@@ -64,8 +87,16 @@
             <dd id="ratio-info">a : b = 4 : 1</dd>
           </div>
           <div>
+            <dt>현재 모드</dt>
+            <dd id="mode-info">하이포사이클로이드</dd>
+          </div>
+          <div>
             <dt>현재 속도</dt>
             <dd id="speed-info">0.02 rad/frame</dd>
+          </div>
+          <div>
+            <dt>현재 보기</dt>
+            <dd id="view-info">원과 자취 함께 보기</dd>
           </div>
           <div>
             <dt>입력 상태</dt>
@@ -76,7 +107,27 @@
 
       <main class="visual-panel">
         <div class="canvas-card">
-          <canvas id="scene" width="960" height="720" aria-label="Hypocycloid visualization"></canvas>
+          <div class="canvas-toolbar" id="save-controls">
+            <button
+              id="save-button"
+              class="toolbar-button"
+              type="button"
+              aria-expanded="false"
+              aria-controls="save-menu"
+            >
+              저장
+            </button>
+            <div id="save-menu" class="save-menu" hidden>
+              <button id="save-with-grid" type="button" class="menu-button">그리드 포함 PNG</button>
+              <button id="save-without-grid" type="button" class="menu-button">그리드 제외 PNG</button>
+            </div>
+          </div>
+          <canvas
+            id="scene"
+            width="960"
+            height="720"
+            aria-label="Hypocycloid and epicycloid visualization"
+          ></canvas>
         </div>
       </main>
     </div>

@@ -18,7 +18,7 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   font-family: "Trebuchet MS", "Avenir Next", sans-serif;
   color: var(--ink);
   background:
@@ -29,10 +29,11 @@ body {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  min-height: 100vh;
+  grid-template-columns: 360px minmax(0, 1fr);
+  min-height: 100dvh;
   gap: 24px;
   padding: 24px;
+  align-items: stretch;
 }
 
 .control-panel,
@@ -49,6 +50,9 @@ body {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  min-height: 0;
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
 }
 
 .eyebrow {
@@ -81,6 +85,10 @@ h1 {
   font-weight: 700;
 }
 
+.group-label {
+  font-weight: 700;
+}
+
 .control-group input[type="text"] {
   width: 100%;
   border: 1px solid rgba(72, 53, 37, 0.18);
@@ -107,6 +115,34 @@ h1 {
   margin: -2px 0 0;
   font-size: 0.84rem;
   color: var(--muted);
+}
+
+.toggle-stack {
+  display: grid;
+  gap: 10px;
+}
+
+.check-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(72, 53, 37, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 253, 248, 0.88);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.check-option input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.check-option:has(input:disabled) {
+  opacity: 0.6;
 }
 
 .value-row,
@@ -173,11 +209,12 @@ button.secondary {
 
 .visual-panel {
   min-width: 0;
+  min-height: 0;
 }
 
 .canvas-card {
-  height: 100%;
-  min-height: calc(100vh - 48px);
+  height: min(100%, calc(100dvh - 48px));
+  min-height: 560px;
   border-radius: 32px;
   padding: 18px;
   position: relative;
@@ -204,12 +241,80 @@ canvas {
   border-radius: 24px;
 }
 
+.canvas-toolbar {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.toolbar-button {
+  background: rgba(47, 36, 27, 0.92);
+  color: white;
+  box-shadow: 0 10px 24px rgba(47, 36, 27, 0.18);
+}
+
+.save-menu {
+  min-width: 180px;
+  padding: 8px;
+  border: 1px solid rgba(72, 53, 37, 0.12);
+  border-radius: 18px;
+  background: rgba(252, 249, 244, 0.96);
+  box-shadow: 0 16px 40px rgba(47, 36, 27, 0.16);
+  display: grid;
+  gap: 6px;
+}
+
+.menu-button {
+  width: 100%;
+  border-radius: 14px;
+  padding: 11px 14px;
+  background: rgba(191, 91, 54, 0.09);
+  color: var(--ink);
+  text-align: left;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
 @media (max-width: 900px) {
   .app-shell {
     grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .control-panel {
+    max-height: none;
+    overflow: visible;
   }
 
   .canvas-card {
-    min-height: 60vh;
+    height: auto;
+    min-height: 60dvh;
+  }
+}
+
+@media (max-height: 820px) {
+  .app-shell {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .control-panel {
+    padding: 22px 20px;
+    gap: 18px;
+    max-height: calc(100dvh - 32px);
+  }
+
+  .canvas-card {
+    height: min(100%, calc(100dvh - 32px));
+    min-height: 480px;
   }
 }
