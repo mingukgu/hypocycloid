@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hypocycloid Explorer</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="control-panel">
+        <div class="panel-copy">
+          <p class="eyebrow">Hypocycloid Lab</p>
+          <h1>하이포사이클로이드 관찰기</h1>
+          <p class="description">
+            큰 원 반지름 <strong>a</strong>, 작은 원 반지름
+            <strong>b</strong>를 조절한 뒤 작은 원의 내부 구름 운동과 점
+            <strong>P</strong>의 궤적을 관찰하세요.
+          </p>
+        </div>
+
+        <div class="control-group">
+          <label for="radius-a">큰 원 반지름 a</label>
+          <input id="radius-a" type="text" value="4" inputmode="text" spellcheck="false" />
+          <p class="input-hint">예: `9`, `3/2`, `sqrt(2)`, `pi`</p>
+          <div class="value-row">
+            <span>평가된 값</span>
+            <strong id="radius-a-value">4</strong>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="radius-b">작은 원 반지름 b</label>
+          <input id="radius-b" type="text" value="1" inputmode="text" spellcheck="false" />
+          <p class="input-hint">곱셈은 `2*pi`처럼 입력해 주세요</p>
+          <div class="value-row">
+            <span>평가된 값</span>
+            <strong id="radius-b-value">1</strong>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="speed-input">작은 원 속도</label>
+          <input id="speed-input" type="text" value="0.02" inputmode="text" spellcheck="false" />
+          <p class="input-hint">한 프레임당 각도 증가량입니다. 예: `0.02`, `1/50`, `pi/180`</p>
+          <div class="value-row">
+            <span>평가된 값</span>
+            <strong id="speed-value">0.02</strong>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="start-button" type="button">시작</button>
+          <button id="reset-button" type="button" class="secondary">초기화</button>
+        </div>
+
+        <dl class="info-list">
+          <div>
+            <dt>점 P의 초기 위치</dt>
+            <dd id="point-info">(a, 0)</dd>
+          </div>
+          <div>
+            <dt>현재 비율</dt>
+            <dd id="ratio-info">a : b = 4 : 1</dd>
+          </div>
+          <div>
+            <dt>현재 속도</dt>
+            <dd id="speed-info">0.02 rad/frame</dd>
+          </div>
+          <div>
+            <dt>입력 상태</dt>
+            <dd id="status-info">유효한 식입니다.</dd>
+          </div>
+        </dl>
+      </aside>
+
+      <main class="visual-panel">
+        <div class="canvas-card">
+          <canvas id="scene" width="960" height="720" aria-label="Hypocycloid visualization"></canvas>
+        </div>
+      </main>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
