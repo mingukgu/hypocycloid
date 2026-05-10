@@ -544,25 +544,25 @@ function renderScene(targetCtx, width, height, options = {}) {
         targetCtx.strokeStyle = config.guideColor;
         targetCtx.lineWidth = 2.4;
         targetCtx.stroke();
+
+        targetCtx.beginPath();
+        targetCtx.moveTo(geometry.cx, geometry.cy);
+        targetCtx.lineTo(geometry.px, geometry.py);
+        targetCtx.strokeStyle = config.spokeColor;
+        targetCtx.lineWidth = 1.8;
+        targetCtx.stroke();
+
+        targetCtx.beginPath();
+        targetCtx.arc(geometry.px, geometry.py, 6, 0, Math.PI * 2);
+        targetCtx.fillStyle = config.pointColor;
+        targetCtx.fill();
+
+        const label = activeModes.length === 1 ? "P" : config.shortLabel;
+        const labelOffsetY = activeModes.length === 1 ? -10 : mode === "hypo" ? -12 : 18;
+        targetCtx.fillStyle = "#2f241b";
+        targetCtx.font = '700 14px "Trebuchet MS", "Avenir Next", sans-serif';
+        targetCtx.fillText(label, geometry.px + 10, geometry.py + labelOffsetY);
       }
-
-      targetCtx.beginPath();
-      targetCtx.moveTo(geometry.cx, geometry.cy);
-      targetCtx.lineTo(geometry.px, geometry.py);
-      targetCtx.strokeStyle = config.spokeColor;
-      targetCtx.lineWidth = 1.8;
-      targetCtx.stroke();
-
-      targetCtx.beginPath();
-      targetCtx.arc(geometry.px, geometry.py, 6, 0, Math.PI * 2);
-      targetCtx.fillStyle = config.pointColor;
-      targetCtx.fill();
-
-      const label = activeModes.length === 1 ? "P" : config.shortLabel;
-      const labelOffsetY = activeModes.length === 1 ? -10 : mode === "hypo" ? -12 : 18;
-      targetCtx.fillStyle = "#2f241b";
-      targetCtx.font = '700 14px "Trebuchet MS", "Avenir Next", sans-serif';
-      targetCtx.fillText(label, geometry.px + 10, geometry.py + labelOffsetY);
     }
 
     if (showBigCircle) {
